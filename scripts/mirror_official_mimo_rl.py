@@ -177,13 +177,13 @@ def main():
             print("WARN static data",url,e,file=sys.stderr)
     manifest={"upstream":ORIGIN,"fetched_at_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
       "html_bytes":len(raw),"assets":[{"url":k,"path":v[0].as_posix(),"bytes":len(v[1])} for k,v in assets.items()],
-      "asset_failures":failures,"api_failures":api_failures}
+      "asset_failures":failures,"static_data_failures":data_failures}
     (DATA_DIR/"mirror-manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
     required=[data_dir/name for name in data_files]
     missing=[name.as_posix() for name in required if not name.is_file() or name.stat().st_size==0]
     if missing:
         raise RuntimeError("Missing required original static JSON files: "+", ".join(missing))
-    essentials=[x for x in failures if re.search(r"\\.(css|js|mjs)(?:$|\\?)",x["url"],re.I)]
+    essentials=[x for x in failures if re.search(r"\.(css|js|mjs)(?:$|\?)",x["url"],re.I)]
     if essentials:
         raise RuntimeError("Original CSS/JS fetch failed: "+json.dumps(essentials))
     manifest["static_data_dir"]=data_prefix
