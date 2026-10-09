@@ -149,7 +149,7 @@ def main():
     # DATA = "data.04135c89/" and expects these exact filenames.
     app_sources=[content.decode("utf-8","replace") for _,(target,content,_) in assets.items() if target.name.startswith("app.") and target.suffix.lower()==".js"]
     app_source="\n".join(app_sources)
-    data_match=re.search(r'const DATA\\s*=\\s*"([^"]+)"',app_source)
+    data_match=re.search(r'const DATA\s*=\s*"([^"]+)"',app_source)
     if not data_match:
         raise RuntimeError("The official app bundle no longer declares its static DATA directory.")
     data_prefix=data_match.group(1)
