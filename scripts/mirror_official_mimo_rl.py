@@ -88,7 +88,14 @@ def main():
             print("WARN asset",url,e,file=sys.stderr)
 
     asset_map={k:v[0] for k,v in assets.items()}
-    # Emit the exact route strings from the fetched upstream scripts for diagnostics.
+    # The upstream app is a static build. Log only its precise JSON/data paths from JS.
+    for key,(target,content,final) in assets.items():
+        if target.suffix.lower() not in {".js", ".mjs"}:
+            continue
+        source_text=content.decode("utf-8","replace")
+        for m in re.finditer(r"data\\.[a-f0-9]+/|[A-Za-z0-9_./-]+\\.json",source_text):
+            snippet=source_text[max(0,m.start()-100):min(len(source_text),m.end()+130)].replace("\\n"," ")
+            print("UPSTREAM_DATA_PATH",target.name,snippet[:320])
     for key,(target,content,final) in assets.items():
         if target.suffix.lower() not in {".js", ".mjs"}:
             continue
