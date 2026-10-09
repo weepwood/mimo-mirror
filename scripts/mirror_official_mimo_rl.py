@@ -88,7 +88,18 @@ def main():
             print("WARN asset",url,e,file=sys.stderr)
 
     asset_map={k:v[0] for k,v in assets.items()}
-    # The upstream app is a static build. Log only its precise JSON/data paths from JS.
+    # Extract exact static-data references and paths from the unmodified upstream bundle.
+    for key,(target,content,final) in assets.items():
+        if target.suffix.lower() not in {".js", ".mjs"}:
+            continue
+        source_text=content.decode("utf-8","replace")
+        lines=source_text.splitlines()
+        printed=0
+        for line_no,line in enumerate(lines,1):
+            if any(token in line for token in (".json", "const DATA", "getJSON(", "DATA}")):
+                print("UPSTREAM_DATA_LINE",target.name,line_no,line.strip()[:500])
+                printed+=1
+                if printed>=120: break
     for key,(target,content,final) in assets.items():
         if target.suffix.lower() not in {".js", ".mjs"}:
             continue
