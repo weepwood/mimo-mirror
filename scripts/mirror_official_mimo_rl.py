@@ -162,11 +162,18 @@ def main():
             (DATA_DIR/filename).write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
             print("API",url,"->",filename,len(content))
         except Exception as e:
-            optional=(endpoint=="tags" and query=="")
+            optional=(endpoint=="tags")
             if not optional: api_failures.append({"url":url,"error":str(e)})
             print("WARN API",url,e,file=sys.stderr)
-    if not (DATA_DIR/"tags.json").exists() and (DATA_DIR/"tags_pro.json").exists():
-        (DATA_DIR/"tags.json").write_bytes((DATA_DIR/"tags_pro.json").read_bytes())
+    if not (DATA_DIR/"tags.json").exists():
+        for source in ("tags_pro.json","tags_flash.json"):
+            if (DATA_DIR/source).exists():
+                (DATA_DIR/"tags.json").write_bytes((DATA_DIR/source).read_bytes())
+                break
+    if (DATA_DIR/"tags.json").exists():
+        for alias in ("tags_pro.json","tags_flash.json"):
+            if not (DATA_DIR/alias).exists():
+                (DATA_DIR/alias).write_bytes((DATA_DIR/"tags.json").read_bytes())
     manifest={"upstream":ORIGIN,"fetched_at_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
       "html_bytes":len(raw),"assets":[{"url":k,"path":v[0].as_posix(),"bytes":len(v[1])} for k,v in assets.items()],
       "asset_failures":failures,"api_failures":api_failures}
