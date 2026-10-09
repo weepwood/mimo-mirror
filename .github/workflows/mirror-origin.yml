@@ -1,0 +1,68 @@
+name: Mirror official MiMo RL website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: official-mimo-rl-mirror
+  cancel-in-progress: true
+
+jobs:
+  mirror-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Fetch original page, assets and public API snapshots
+        run: python3 scripts/mirror_official_mimo_rl.py
+      - name: Validate original page and JSON
+        run: |
+          test -s index.html
+          test -s origin-fetch-shim.js
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          required = [
+              "runs.json", "notices.json", "benchmarks.json",
+              "status_pro.json", "status_flash.json",
+              "series_pro.json", "series_flash.json"
+          ]
+          for name in required:
+              p = Path("origin-data") / name
+              assert p.is_file() and p.stat().st_size > 0, f"missing {p}"
+              json.loads(p.read_text(encoding="utf-8"))
+          print("Original page/API snapshots validated.")
+          PY
+      - name: Commit mirrored source and snapshots
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html origin origin-external origin-data origin-fetch-shim.js
+          if ! git diff --cached --quiet; then
+            git commit -m "从 MiMo RL 原站同步页面资源与数据"
+            git push origin HEAD:main
+          else
+            echo "No upstream changes to commit."
+          fi
+      - name: Enable GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - name: Upload mirrored website
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - name: Deploy mirrored website
+        id: deployment
+        uses: actions/deploy-pages@v4
+      - name: Report deployed URL
+        run: echo "Deployed to ${{ steps.deployment.outputs.page_url }}"
