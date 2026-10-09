@@ -88,6 +88,18 @@ def main():
             print("WARN asset",url,e,file=sys.stderr)
 
     asset_map={k:v[0] for k,v in assets.items()}
+    # Emit the exact route strings from the fetched upstream scripts for diagnostics.
+    for key,(target,content,final) in assets.items():
+        if target.suffix.lower() not in {".js", ".mjs"}:
+            continue
+        source_text=content.decode("utf-8","replace")
+        seen=set()
+        for m in re.finditer(r"(?:fetch|/api|api/|API_BASE|status\?|series\?|live\?|notices|benchmarks|tags\?|runs)",source_text,re.I):
+            snippet=source_text[max(0,m.start()-100):min(len(source_text),m.end()+170)].replace("\\n"," ")
+            if snippet not in seen:
+                print("UPSTREAM_JS_ROUTE",target.name,snippet[:290])
+                seen.add(snippet)
+            if len(seen)>=50: break
     for key,(target,content,final) in assets.items():
         target.parent.mkdir(parents=True,exist_ok=True)
         if target.suffix.lower() not in {".css",".js",".mjs"}:
