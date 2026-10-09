@@ -1,21 +1,21 @@
 # MiMo RL Mirror
 
-An independent, responsive static-page recreation inspired by the MiMo RL topic.
+This repository mirrors the public MiMo RL page at <https://mimo.xiaomi.com/rl/>.
 
-> This project is not an official Xiaomi website and is not affiliated with Xiaomi. Text and charts on this page are illustrative, not official claims or measured benchmark data.
+## How the mirror is built
 
-## Run locally
+The GitHub Actions workflow downloads the current upstream HTML, CSS, JavaScript, and referenced static assets directly from the official page. It also saves the public JSON responses used by the original front end under `origin-data/` and injects a small fetch adapter so the original front-end code can read those snapshots from GitHub Pages, which is a static host.
 
-Open `index.html` in a browser. No dependencies or build step are required.
+The goal is to retain the original UI and interactions rather than maintain a separately designed imitation. Since GitHub Pages cannot run the original API, run data is a snapshot captured by the last successful workflow. Run **Actions → Mirror official MiMo RL website → Run workflow** to refresh it.
 
-## Deploy to GitHub Pages
+## Links
 
-The workflow in `.github/workflows/pages.yml` deploys the repository root whenever code is pushed to `main`.
+- Original: <https://mimo.xiaomi.com/rl/>
+- Mirror: <https://weepwood.github.io/mimo-mirror/>
+- [Latest workflow runs](https://github.com/weepwood/mimo-mirror/actions)
 
-In repository settings, ensure **Pages → Build and deployment → Source** is set to **GitHub Actions**.
+## Notes
 
-Expected URL: https://weepwood.github.io/mimo-mirror/
-
-## Scope
-
-This is a front-end visual recreation. It does not reproduce proprietary APIs, backend services, private assets, or functionality unavailable from the public website.
+- Independent, unofficial mirror; not affiliated with Xiaomi.
+- Public source assets and API responses are fetched directly from the origin. This repository does not include private backend services.
+- The mirror workflow deploys from the same successful run that fetches the source assets.
