@@ -148,8 +148,8 @@ def main():
     # This upstream build is static: the original app.js reads these files from
     # DATA = "data.04135c89/" and expects these exact filenames.
     app_sources=[content.decode("utf-8","replace") for _,(target,content,_) in assets.items() if target.name.startswith("app.") and target.suffix.lower()==".js"]
-    app_source="\\n".join(app_sources)
-    data_match=re.search(r'const DATA\\s*=\\s*["\\']([^"\\']+)["\\']',app_source)
+    app_source="\n".join(app_sources)
+    data_match=re.search(r'const DATA\\s*=\\s*"([^"]+)"',app_source)
     if not data_match:
         raise RuntimeError("The official app bundle no longer declares its static DATA directory.")
     data_prefix=data_match.group(1)
@@ -170,7 +170,7 @@ def main():
             payload=json.loads(content.decode("utf-8","replace"))
             if not isinstance(payload,(dict,list)):
                 raise ValueError("unexpected JSON document shape")
-            (data_dir/filename).write_text(json.dumps(payload,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
+            (data_dir/filename).write_bytes(content)
             print("STATIC DATA",url,"->",(data_dir/filename).as_posix(),len(content))
         except Exception as e:
             data_failures.append({"url":url,"error":str(e)})
