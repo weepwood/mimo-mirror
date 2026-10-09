@@ -1,273 +1,56 @@
 <!doctype html>
 <html lang="en">
 <head>
+<base href="./">
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#101010">
 <title>mimo-v2.6 RL</title>
-<style>
-:root{color-scheme:dark;--bg:#101010;--panel:#141414;--panel2:#171717;--edge:#292929;--edge2:#222;--text:#d8d8d8;--muted:#737373;--faint:#505050;--pro:#ec7135;--flash:#4d8be7;--green:#6eaf86;--mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;--sans:Arial,Helvetica,sans-serif}
-*{box-sizing:border-box}html{background:var(--bg);scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:var(--mono);font-size:10px;font-weight:400;line-height:1.45;letter-spacing:0;min-width:320px}button,input{font:inherit;color:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:1px solid #8b8b8b;outline-offset:2px}a{color:inherit;text-decoration:none}.shell{width:88%;max-width:1680px;margin:0 auto}.top{min-height:39px;display:flex;align-items:flex-start;justify-content:space-between;gap:18px;padding-top:7px;border-bottom:1px solid #1b1b1b}.tabs{display:flex;gap:16px;align-items:center;white-space:nowrap}.tab{padding:0 0 7px;border:0;border-bottom:1px solid transparent;background:transparent;color:#777;font-size:9px}.tab:hover{color:#bbb}.tab.active{color:#eee;border-bottom-color:#e2e2e2}.top-right{display:flex;align-items:flex-start;gap:0;white-space:nowrap;margin-top:-1px}.clock-group{display:flex;gap:13px;align-items:flex-start}.clock{min-width:47px;text-align:center;color:#7b7b7b;font-size:7px;line-height:1.3;text-transform:uppercase;letter-spacing:.04em}.clock b{display:block;font-size:9px;color:#c4c4c4;font-weight:400;letter-spacing:0}.cost{text-align:right;padding:0 13px 0 0;margin-right:12px;border-right:1px solid #292929;color:#737373;text-transform:uppercase;font-size:7px;line-height:1.3}.cost b{display:block;font-size:10px;color:#ddd;font-weight:400;letter-spacing:.02em}.theme-toggle{border:0;background:none;padding:0 0 0 12px;color:#777;font-size:12px}.view{display:none}.view.active{display:block}.notices{border:1px solid var(--edge);margin-top:5px;background:#141414;border-radius:2px;overflow:hidden}.box-label{height:24px;display:flex;align-items:center;padding:0 9px;color:#a0a0a0;border-bottom:1px solid #242424;font-size:9px}.notice{min-height:27px;padding:6px 9px;border-bottom:1px solid #242424;display:grid;grid-template-columns:70px 1fr;gap:12px;color:#c4c4c4;font-size:9px;line-height:1.45}.notice:last-child{border-bottom:0}.notice time{color:#656565;white-space:nowrap;font-size:8px}.run-card{margin-top:8px;border:1px solid var(--edge);border-radius:2px;background:#151515;overflow:hidden}.run-head{height:36px;display:grid;grid-template-columns:minmax(180px,1.2fr) minmax(90px,.55fr) minmax(135px,.9fr) minmax(230px,1.3fr);align-items:center;gap:12px;padding:0 10px;border-bottom:1px solid #282828}.run-name{display:flex;align-items:center;gap:7px;white-space:nowrap}.run-dot{width:6px;height:6px;border-radius:50%;background:var(--pro);flex-shrink:0}.flash .run-dot{background:var(--flash)}.run-name strong{font-weight:500;color:#d0d0d0;font-size:10px}.status{color:#787878;margin-left:2px}.run-state{display:flex;align-items:center;gap:7px;white-space:nowrap}.run-state b{color:#ddd;font-size:10px;font-weight:600}.run-age{color:#c8c8c8;font-size:9px;white-space:nowrap}.run-age small{display:block;color:#747474;font-size:8px}.progress{display:flex;align-items:center;gap:8px;white-space:nowrap;color:#838383;font-size:8px;min-width:0}.progress-line{flex:1;min-width:35px;height:3px;background:#292929;position:relative}.progress-line span{position:absolute;inset:0 auto 0 0;background:var(--pro);width:42%}.flash .progress-line span{background:var(--flash);width:42%}.run-stats{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}.stat{padding:8px 9px 9px;border-right:1px solid #242424;min-width:0}.stat:last-child{border-right:0}.stat label{display:block;color:#777;font-size:8px;margin-bottom:4px;white-space:nowrap}.stat b{display:block;color:#e4e4e4;font-size:13px;font-weight:600;white-space:nowrap;line-height:1.2}.stat small{color:#7f7f7f;font-size:8px;margin-left:4px;font-weight:400}.delta{color:#a7a7a7!important}.section-title{display:flex;align-items:center;gap:14px;margin:12px 0 6px;color:#c4c4c4;font-size:10px;font-weight:500}.section-title .sub{color:#777;font-size:8px;font-weight:400}.benchmark-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.bench{border:1px solid var(--edge);border-radius:2px;background:#141414;min-width:0;padding:7px 8px 5px}.bench-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;min-height:24px}.bench-name{font-size:9px;color:#c6c6c6}.bench-name small{color:#777;font-size:8px}.bench-values{font-size:8px;line-height:1.4;text-align:right;white-space:nowrap}.key{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px;vertical-align:middle}.key.pro{background:var(--pro)}.key.flash{background:var(--flash)}.svg-chart{width:100%;height:105px;display:block}.controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin:9px 0 8px;color:#777;font-size:8px}.seg{display:inline-flex;border:1px solid #303030;border-radius:2px;overflow:hidden}.seg button{background:#151515;border:0;border-right:1px solid #303030;padding:3px 7px;color:#777;font-size:8px}.seg button:last-child{border-right:0}.seg button.active{background:#ddd;color:#171717}.smooth{display:flex;align-items:center;gap:7px}.smooth input{width:76px;height:10px;accent-color:#c8c8c8}.legend{display:flex;align-items:center;gap:10px;margin-left:auto}.legend span{white-space:nowrap}.graph-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.metric-card{border:1px solid var(--edge);background:#141414;border-radius:2px;min-width:0;padding:7px 8px 5px}.metric-head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;min-height:18px;color:#aaa;font-size:9px}.metric-value{white-space:nowrap;text-align:right;color:#8d8d8d;font-size:8px}.metric-value .p{color:var(--pro)}.metric-value .f{color:var(--flash)}.metric-card .svg-chart{height:112px}.sampler-title{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-size:10px;color:#c8c8c8}.sampler-title span{color:#777;font-size:9px}.sampler-layout{display:grid;grid-template-columns:1.15fr 1fr;gap:7px}.panel{border:1px solid var(--edge);background:#141414;border-radius:2px;min-width:0;overflow:hidden}.panel-head{height:24px;padding:0 9px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #252525;color:#c8c8c8;font-size:9px}.panel-head span{color:#6c6c6c;font-size:8px}.feed-row{padding:6px 9px;border-bottom:1px solid #252525;display:grid;grid-template-columns:54px 1fr;gap:9px;font-size:8px;line-height:1.45;color:#aaa}.feed-row:last-child{border-bottom:0}.feed-row time{color:#777}.feed-row strong{color:#d0d0d0;font-weight:400}.feed-row .more{color:#666}.data-table{width:100%;border-collapse:collapse;font-size:8px;white-space:nowrap}.data-table th{color:#666;text-align:right;font-weight:400;padding:6px 7px;border-bottom:1px solid #282828}.data-table th:first-child,.data-table td:first-child{text-align:left;padding-left:9px}.data-table td{padding:5px 7px;text-align:right;border-bottom:1px solid #222;color:#aaa}.data-table tr:last-child td{border-bottom:0}.data-table td:first-child{color:#c0c0c0}.bar-cell{display:flex;align-items:center;gap:6px;justify-content:flex-end}.bar{width:56px;height:3px;background:#292929;display:inline-block;flex-shrink:0}.bar i{display:block;height:100%;background:var(--flash)}.scroll-table{max-height:300px;overflow:auto}.composition-controls{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.composition-controls button{border:1px solid #303030;background:#141414;padding:3px 7px;font-size:8px;color:#888}.composition-controls button.active{background:#dedede;color:#111}.composition-grid{display:grid;grid-template-columns:1.4fr .9fr;gap:7px}.stack-svg{width:100%;height:184px;display:block}.cat-key{display:flex;gap:10px;flex-wrap:wrap;color:#888;font-size:8px;margin:7px 0 0}.cat-key i{display:inline-block;width:5px;height:5px;border-radius:50%;margin-right:4px}.cat-code{background:#5889e4}.cat-general{background:#dc773f}.cat-cyber{background:#5ca878}.cat-visual{background:#d6b64a}.cat-chat{background:#c25b88}.footer{border-top:1px solid #292929;margin-top:18px;padding:10px 0 25px;display:flex;align-items:center;gap:18px;color:#686868;font-size:8px}.footer .handle{color:#bcbcbc}.footer .motto{color:#818181}.metrics-layout{display:grid;grid-template-columns:210px 1fr;gap:14px;margin-top:14px;min-height:230px}.tree{border-right:1px solid #292929;padding-right:12px}.search{width:100%;background:#191919;border:1px solid #2e2e2e;padding:6px 8px;color:#bbb;outline:none;margin-bottom:8px;font-size:9px}.search::placeholder{color:#6c6c6c}.tree-row{display:flex;align-items:center;justify-content:space-between;padding:4px 6px;color:#8a8a8a;cursor:pointer;font-size:9px}.tree-row:hover,.tree-row.active{background:#222;color:#ddd}.tree-row small{color:#6a6a6a}.metric-top{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.metric-chip{border:1px solid #2c2c2c;padding:4px 7px;color:#999;background:#151515;cursor:pointer;border-radius:2px;font-size:8px}.metric-chip:hover,.metric-chip.active{border-color:#777;color:#ddd;background:#1d1d1d}.tag-note{color:#666;font-size:8px;margin:9px 0 0}.selected-empty{border-top:1px solid #272727;margin-top:20px;padding:14px 0;color:#555;font-size:9px;min-height:90px}.metric-result-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin-top:14px}.about-page{min-height:250px;padding:40px 0 52px;max-width:680px;color:#a8a8a8;font-size:11px;line-height:1.9}.about-page p{margin:0 0 12px}.about-page a{color:#ddd;text-decoration:underline;text-underline-offset:3px}.about-page .open{margin-top:27px;color:#d1d1d1}.hidden{display:none!important}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-@media(min-width:1550px){body{font-size:11px}.shell{width:88%}.run-stats .stat{padding:10px 12px}.stat b{font-size:15px}.svg-chart{height:135px}.metric-card .svg-chart{height:138px}.bench .svg-chart{height:128px}.notice{font-size:10px;padding-top:7px;padding-bottom:7px}}
-@media(max-width:900px){.shell{width:94%}.top{flex-wrap:wrap;padding-bottom:7px}.top-right{margin-left:auto}.clock-group{gap:7px}.clock{min-width:38px}.run-head{grid-template-columns:1fr .6fr 1fr;gap:8px}.progress{grid-column:1/-1;grid-row:2;padding-bottom:7px}.run-head{height:auto;padding-top:8px}.run-age{font-size:8px}.run-stats{grid-template-columns:repeat(3,minmax(0,1fr))}.stat:nth-child(3){border-right:0}.stat:nth-child(n+4){border-top:1px solid #242424}.benchmark-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.graph-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.sampler-layout,.composition-grid{grid-template-columns:1fr}.metrics-layout{grid-template-columns:165px minmax(0,1fr)}}
-@media(max-width:560px){body{font-size:9px}.shell{width:calc(100% - 20px)}.top{gap:8px}.tabs{gap:12px}.top-right{width:100%;justify-content:space-between;margin:0 0 2px}.clock-group{gap:5px}.clock{min-width:36px;font-size:6px}.clock b{font-size:8px}.cost{margin-right:6px;padding-right:7px}.theme-toggle{padding-left:5px}.notice{grid-template-columns:55px 1fr;gap:6px;font-size:8px}.run-head{grid-template-columns:1fr .5fr;gap:8px}.run-age{display:none}.progress{grid-column:1/-1}.run-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.stat:nth-child(3){border-right:1px solid #242424}.stat:nth-child(2n){border-right:0}.stat:nth-child(n+3){border-top:1px solid #242424}.stat b{font-size:12px}.benchmark-grid,.graph-grid{grid-template-columns:1fr}.bench .svg-chart,.metric-card .svg-chart{height:135px}.legend{width:100%;margin-left:0}.metrics-layout{grid-template-columns:1fr}.tree{border-right:0;border-bottom:1px solid #292929;padding:0 0 12px}.tree-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.metric-result-grid{grid-template-columns:1fr}.footer{gap:8px;flex-wrap:wrap}.panel-head{height:auto;min-height:25px;gap:8px}.composition-controls{margin-top:5px}.section-title{margin-top:10px}}
-</style>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Training metrics of the mimo-v2.6-pro and mimo-v2.6-flash reinforcement-learning runs, live from the trainer's logs.">
+<meta name="color-scheme" content="light dark">
+<link rel="icon" href="./origin/favicon.40624f41.svg" type="image/svg+xml">
+<link rel="stylesheet" href="./origin/style.90858055.css">
+<script src="./origin/js/theme.638e7988.js"></script>
 </head>
 <body>
-<div class="shell">
-<header class="top">
-<nav class="tabs" aria-label="Main navigation">
-<button class="tab active" data-tab="overview">overview</button>
-<button class="tab" data-tab="metrics">metrics</button>
-<button class="tab" data-tab="about">about</button>
-</nav>
-<div class="top-right">
-<div class="cost">total cost<b id="totalCost">$3,474,715</b></div>
-<div class="clock-group">
-<div class="clock">Beijing<b data-zone="Asia/Shanghai">--:--:--</b></div>
-<div class="clock">Los Angeles<b data-zone="America/Los_Angeles">--:--:--</b></div>
-<div class="clock">New York<b data-zone="America/New_York">--:--:--</b></div>
-<div class="clock">London<b data-zone="Europe/London">--:--:--</b></div>
-</div>
-<button id="themeToggle" class="theme-toggle" aria-label="Toggle color mode" title="Toggle color mode">◐</button>
-</div>
+
+<header class="nav">
+  <div class="wrap nav-inner">
+    <nav class="tabs" id="tabs">
+      <a data-view="overview">overview</a>
+      <a data-view="metrics">metrics</a>
+      <a data-view="about">about</a>
+    </nav>
+    <div class="nav-right">
+      <div class="nav-status" id="nav-status"></div>
+      <button class="icon-btn" id="theme-toggle" aria-label="Toggle theme" title="Toggle theme">◐</button>
+    </div>
+  </div>
 </header>
 
-<main id="overview" class="view active">
-<section class="notices" aria-label="Training notices">
-<div class="box-label">notices</div>
-<div class="notice"><time>1d 22h ago</time><span>we filtered out tasks that are relatively easy for the current pro model.</span></div>
-<div class="notice"><time>3d 5h ago</time><span>the pro run restarted at step 17 due to a GPU OOM issue caused by expert load imbalance. we have adjusted the training parallelism strategy.</span></div>
-<div class="notice"><time>3d 5h ago</time><span>there was a network connectivity issue between the pro training cluster and the grader deployment. we have restarted the run. we also removed the cyber dataset from the upcoming pro run, since we observed some bad patterns in the rollout logs.</span></div>
-<div class="notice"><time>4d 6h ago</time><span>we restarted the flash run from step 15. reason: a type of infra error on one of datasets was not correctly detected over the past ~3 hours.</span></div>
-<div class="notice"><time>4d 12h ago</time><span>the mimo-v2.6-pro run is restarting due to a vram issue on one node.</span></div>
-<div class="notice"><time>4d 14h ago</time><span>we have updated the latest deepswe results for flash step 12 &amp; pro step 8. we will keep posting as the offline evaluation results come out.</span></div>
-</section>
-
-<section class="run-card pro">
-<div class="run-head">
-<div class="run-name"><i class="run-dot"></i><strong>mimo-v2.6-pro</strong><span class="status">stopped</span></div>
-<div class="run-state"><b>step 30</b></div>
-<div class="run-age">5d 07:29:21<small>started 2026-09-15 10:32 UTC</small></div>
-<div class="progress"><span>stopped 2026-09-20</span></div>
-</div>
-<div class="run-stats">
-<div class="stat"><label>dynsam/avg@n · Δ vs step 1</label><b>0.633 <small class="delta">▲0.068</small></b></div>
-<div class="stat"><label>cost so far</label><b>$2,620,670</b></div>
-<div class="stat"><label>tokens · step 30</label><b>3.43B</b></div>
-<div class="stat"><label>tokens · total</label><b>75B</b></div>
-<div class="stat"><label>samples trained</label><b>753k</b></div>
-<div class="stat"><label>train batch size × n</label><b>1,568 × 16 <small>seqs</small></b></div>
-</div>
-</section>
-<section class="run-card flash">
-<div class="run-head">
-<div class="run-name"><i class="run-dot"></i><strong>mimo-v2.6-flash</strong><span class="status">stopped</span></div>
-<div class="run-state"><b>step 30</b></div>
-<div class="run-age">3d 11:05:40<small>started 2026-09-15 15:16 UTC</small></div>
-<div class="progress"><span>stopped 2026-09-19</span></div>
-</div>
-<div class="run-stats">
-<div class="stat"><label>dynsam/avg@n · Δ vs step 1</label><b>0.644 <small class="delta">▲0.130</small></b></div>
-<div class="stat"><label>cost so far</label><b>$854,044</b></div>
-<div class="stat"><label>tokens · step 30</label><b>3.7B</b></div>
-<div class="stat"><label>tokens · total</label><b>81.4B</b></div>
-<div class="stat"><label>samples trained</label><b>753k</b></div>
-<div class="stat"><label>train batch size × n</label><b>1,568 × 16 <small>seqs</small></b></div>
-</div>
-</section>
-
-<div class="section-title">benchmarks</div>
-<section class="benchmark-grid">
-<article class="bench">
-<div class="bench-head"><div class="bench-name">DeepSWE v1.1 <small>mini-swe-agent, avg@3</small></div><div class="bench-values"><span class="key pro"></span>mimo-v2.6-pro&nbsp; 72.57<br><span class="key flash"></span>mimo-v2.6-flash&nbsp; 65.68</div></div>
-<div class="chart" data-chart="deepswe"><svg class="svg-chart" aria-label="DeepSWE v1.1 benchmark line chart"></svg></div>
-</article>
-<article class="bench">
-<div class="bench-head"><div class="bench-name">In-house Coding Bench <small>avg@3</small></div><div class="bench-values"><span class="key pro"></span>mimo-v2.6-pro&nbsp; 65.43<br><span class="key flash"></span>mimo-v2.6-flash&nbsp; 62.87</div></div>
-<div class="chart" data-chart="coding"><svg class="svg-chart" aria-label="In-house Coding Bench line chart"></svg></div>
-</article>
-<article class="bench">
-<div class="bench-head"><div class="bench-name">AutomationBench v1.0.6 <small>avg@3</small></div><div class="bench-values"><span class="key pro"></span>mimo-v2.6-pro&nbsp; 53.10<br><span class="key flash"></span>mimo-v2.6-flash&nbsp; 52.70</div></div>
-<div class="chart" data-chart="automation"><svg class="svg-chart" aria-label="AutomationBench line chart"></svg></div>
-</article>
-</section>
-
-<div class="controls">
-<div class="seg" id="xAxis"><button class="active" data-value="step">step</button><button data-value="time">time</button></div>
-<div class="seg" id="yAxis"><button class="active" data-value="linear">linear</button><button data-value="log">log</button></div>
-<label class="smooth">smoothing <input id="smooth" type="range" min="0" max="10" value="0"><span id="smoothLabel">off</span></label>
-<div class="legend"><span><i class="key pro"></i>mimo-v2.6-pro</span><span><i class="key flash"></i>mimo-v2.6-flash</span></div>
-</div>
-<section class="graph-grid" id="overviewMetrics">
-<article class="metric-card"><div class="metric-head"><span>dynsam/avg@n</span><span class="metric-value"><span class="p">● 0.633 ▲0.068</span><br><span class="f">● 0.644 ▲0.130</span></span></div><div class="chart" data-chart="dynsam"><svg class="svg-chart"></svg></div></article>
-<article class="metric-card"><div class="metric-head"><span>critic/rewards/mean</span><span class="metric-value"><span class="p">● 0.588 ±0.005</span><br><span class="f">● 0.644 ±0.004</span></span></div><div class="chart" data-chart="critic"><svg class="svg-chart"></svg></div></article>
-<article class="metric-card"><div class="metric-head"><span>actor/entropy_loss</span><span class="metric-value"><span class="p">● 0.398 ±0.009</span><br><span class="f">● 0.432 ±0.004</span></span></div><div class="chart" data-chart="entropy"><svg class="svg-chart"></svg></div></article>
-<article class="metric-card"><div class="metric-head"><span>env/active</span><span class="metric-value"><span class="p">● 23,671</span><br><span class="f">● 37,786</span></span></div><div class="chart" data-chart="env"><svg class="svg-chart"></svg></div></article>
-<article class="metric-card"><div class="metric-head"><span>partial/avg_staleness</span><span class="metric-value"><span class="p">● 1.61 ±0.329</span><br><span class="f">● 1.87 ±0.015</span></span></div><div class="chart" data-chart="staleness"><svg class="svg-chart"></svg></div></article>
-<article class="metric-card"><div class="metric-head"><span>dynsam/num_measurable</span><span class="metric-value"><span class="p">● 2,484</span><br><span class="f">● 2,443</span></span></div><div class="chart" data-chart="measurable"><svg class="svg-chart" aria-label="Metric line chart"></svg></div></article>
-</section>
-
-<section class="sampler">
-<div class="sampler-title">dynamic sampler <span>mimo-v2.6-pro</span></div>
-<div class="sampler-layout">
-<div class="panel"><div class="panel-head">feed <span>log up to date</span></div>
-<div class="feed-row"><time>just now</time><div><strong>accepted 664/1,568 · judged 653 · pass 0.633</strong> (n=6,909) · remaining 590 +1,058 partial +71 rewarding · prewarm 512</div></div>
-<div class="feed-row"><time>7m ago</time><div><strong>accepted 664/1,568 · judged 653 · pass 0.633</strong> (n=6,897) · remaining 590 +1,058 partial +71 rewarding · prewarm 512 <span class="more">step 31</span></div></div>
-<div class="feed-row"><time>1h ago</time><div><strong>step 30 done · dynsam/avg@n 0.633</strong> · 3.43B tok <span class="more">step 30</span></div></div>
-<div class="feed-row"><time>3h ago</time><div><strong>accepted 2,152/1,568 · judged 2,059 · pass 0.622</strong> (n=6,661) · remaining 598 +1,071 partial +301 rewarding · prewarm 392</div></div>
-<div class="feed-row"><time>3h ago</time><div><strong>accepted 2,144/1,568 · judged 2,050 · pass 0.622</strong> (n=6,647) · remaining 594 +1,069 partial +302 rewarding · prewarm 302</div></div>
-<div class="feed-row"><time>4h ago</time><div><strong>accepted 2,136/1,568 · judged 2,043 · pass 0.623</strong> (n=6,624) · remaining 592 +1,071 partial +302 rewarding · prewarm 300</div></div>
-<div class="feed-row"><time>5h ago</time><div><strong>accepted 2,128/1,568 · judged 2,038 · pass 0.622</strong> (n=6,611) · remaining 592 +1,069 partial +302 rewarding · prewarm 302</div></div>
-</div>
-<div class="panel"><div class="panel-head">step 31 · accepted 664/1,568 <span>just now</span></div><div class="scroll-table"><table class="data-table"><thead><tr><th>source</th><th>accepted / target</th><th>remaining</th><th>judged</th><th>in flight</th></tr></thead><tbody id="proSources"></tbody></table></div></div>
-</div>
-
-<div class="sampler-title">dynamic sampler <span>mimo-v2.6-flash</span></div>
-<div class="sampler-layout">
-<div class="panel"><div class="panel-head">feed <span>log up to date</span></div>
-<div class="feed-row"><time>just now</time><div><strong>run stopped</strong> · step 31 rollout · accepted 664/1,568 · 3.7B tok</div></div>
-<div class="feed-row"><time>1m ago</time><div><strong>accepted 664/1,568 · judged 651 · pass 0.644</strong> (n=7,130) · remaining 604 +999 partial +74 rewarding · prewarm 401</div></div>
-<div class="feed-row"><time>4m ago</time><div><strong>step 30 done · dynsam/avg@n 0.644</strong> · 3.7B tok <span class="more">step 30</span></div></div>
-<div class="feed-row"><time>5m ago</time><div><strong>accepted 2,616/1,568 · judged 2,581 · pass 0.644</strong> (n=4,416) · remaining 315 +992 partial +198 rewarding · prewarm 395</div></div>
-<div class="feed-row"><time>6m ago</time><div><strong>accepted 2,608/1,568 · judged 2,571 · pass 0.642</strong> (n=4,407) · remaining 318 +998 partial +193 rewarding · prewarm 395</div></div>
-<div class="feed-row"><time>7m ago</time><div><strong>accepted 2,600/1,568 · judged 2,566 · pass 0.642</strong> (n=4,395) · remaining 322 +984 partial +193 rewarding · prewarm 395</div></div>
-<div class="feed-row"><time>8m ago</time><div><strong>accepted 2,592/1,568 · judged 2,554 · pass 0.641</strong> (n=4,371) · remaining 328 +991 partial +190 rewarding · prewarm 395</div></div>
-</div>
-<div class="panel"><div class="panel-head">step 31 · accepted 664/1,568 <span>just now</span></div><div class="scroll-table"><table class="data-table"><thead><tr><th>source</th><th>accepted / target</th><th>remaining</th><th>judged</th><th>in flight</th></tr></thead><tbody id="flashSources"></tbody></table></div></div>
-</div>
-</section>
-
-<section class="batch">
-<div class="section-title">batch composition <span class="sub">what each step’s samples are made of</span></div>
-<div class="composition-controls">
-<span style="color:#666;margin-right:4px">by</span>
-<div class="seg" id="batchBy"><button class="active" data-value="source">data source</button><button data-value="harness">harness (trained)</button></div>
-<div class="seg" id="batchRun"><button class="active" data-value="pro">mimo-v2.6-pro</button><button data-value="flash">mimo-v2.6-flash</button></div>
-<div class="seg" id="batchUnit"><button class="active" data-value="count">count</button><button data-value="share">share</button></div>
-</div>
-<div class="composition-grid" style="margin-top:7px">
-<div class="panel" style="padding:8px"><div class="panel-head" style="padding:0;height:auto;border:0">trained prompts per step, by category <span>25 sources · derived from dynsam/*/num_accepted</span></div><div class="cat-key"><span><i class="cat-code"></i>code</span><span><i class="cat-general"></i>general</span><span><i class="cat-cyber"></i>cyber</span><span><i class="cat-visual"></i>visual</span><span><i class="cat-chat"></i>chat</span></div><svg class="stack-svg" id="stackChart" aria-label="Batch composition chart"></svg></div>
-<div class="panel"><div class="panel-head">step 30 <span>1,568 prompts · train batch 1,568</span></div><table class="data-table"><thead><tr><th>category</th><th>sources</th><th>prompts</th><th>share</th><th>Δ share</th></tr></thead><tbody id="compositionRows"></tbody></table><div style="padding:8px;color:#626262;font-size:8px;line-height:1.5">* steps right after a restart report the pool before consumption; the split is carryover + a proportional share of fresh accepts.</div></div>
-</div>
-</section>
+<main class="wrap" id="main">
+  <section class="view" id="view-overview"></section>
+  <section class="view" id="view-metrics"></section>
+  <section class="view" id="view-about"></section>
 </main>
 
-<main id="metrics" class="view">
-<div class="metrics-layout">
-<aside class="tree">
-<input id="tagSearch" class="search" type="text" placeholder="filter tags (substring / regex)…" autocomplete="off" aria-label="Filter metric tags">
-<div id="tagTree" class="tree-list"></div>
-<div class="tag-note" id="tagCount">all · 2077 tags</div>
-</aside>
-<section>
-<div class="controls" style="margin:0 0 12px">
-<div class="seg" id="metricsXAxis"><button class="active" data-value="step">step</button><button data-value="time">time</button></div>
-<div class="seg" id="metricsYAxis"><button class="active" data-value="linear">linear</button><button data-value="log">log</button></div>
-<label class="smooth">smoothing <input id="metricsSmooth" type="range" min="0" max="10" value="0"><span id="metricsSmoothLabel">off</span></label>
-</div>
-<div class="metric-top" id="metricChips"><button class="metric-chip active" data-group="all">all&nbsp; 2077 tags</button></div>
-<div id="metricResults" class="metric-result-grid"></div>
-<div id="metricEmpty" class="selected-empty">Select a metric from the tree to display its training curves.</div>
-</section>
-</div>
-</main>
+<footer class="wrap foot"><a id="foot-handle" target="_blank" rel="noopener"></a><span id="foot-stream"></span><span id="foot-note"></span></footer>
 
-<main id="about" class="view">
-<section class="about-page">
-<p>We are streaming our RL big runs.</p>
-<p>The mimo-v2.6 series is coming soon.</p>
-<p>Follow us <a href="https://x.com/XiaomiMiMo" target="_blank" rel="noreferrer">@XiaomiMiMo</a>.</p>
-<p class="open">Open is what we value.</p>
-</section>
-</main>
-<footer class="footer"><a class="handle" href="https://x.com/XiaomiMiMo" target="_blank" rel="noreferrer">@XiaomiMiMo</a><span>streaming since 2026-09-16 04:00 UTC</span><span class="motto">Open is what we value.</span></footer>
+<div class="modal hidden" id="modal">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card" role="dialog" aria-modal="true">
+    <div class="modal-head">
+      <div><div class="modal-title mono" id="modal-title"></div><div class="modal-desc" id="modal-desc"></div></div>
+      <button class="icon-btn" data-close aria-label="Close">✕</button>
+    </div>
+    <div class="modal-stats mono" id="modal-stats"></div>
+    <div class="modal-chart" id="modal-chart"></div>
+  </div>
 </div>
-<script>
-(() => {
-const $ = (s,root=document) => root.querySelector(s);
-const $$ = (s,root=document) => [...root.querySelectorAll(s)];
-const colors = {pro:'#ec7135',flash:'#4d8be7',grid:'#292929',axis:'#686868'};
-const data = {
- deepswe:{min:45,max:78,pro:[58,56,60,58,61,63,62,61,60,59,65,66,67,68,67,69,70,70,71,72,71,74,73,75,72,73,74,71,74,72.57],flash:[49,52,54,51,57,55,59,56,60,54,57,58,59,57,60,61,59,62,63,59,65,60,64,61,63,57,66,62,64,65.68]},
- coding:{min:53,max:68,pro:[57,58,58,60,59,61,61,62,62,61,62,63,64,63,64,64,65,64,65,65,65,66,65,65,66,66,66,66,65.6,65.43],flash:[54,55,55,56,57,56,57,58,58,59,58,59,60,60,60,60,61,61,61,61,62,61,62,62,62,63,62,62,63,62.87]},
- automation:{min:42,max:56,pro:[45,46,46,47,48,47,50,48,50,49,51,52,51,51,52,51,52,53,52,52,53,52,54,53,53,52,53,54,53,53.10],flash:[44,44,45,46,46,47,46,48,47,48,48,49,50,49,50,50,51,50,51,52,51,52,52,51,52,53,52,52,52.5,52.70]},
- dynsam:{min:.45,max:.70,pro:[.565,.55,.59,.57,.61,.64,.62,.61,.60,.59,.65,.66,.67,.66,.65,.64,.63,.67,.66,.62,.63,.64,.62,.63,.64,.62,.63,.64,.64,.633],flash:[.514,.54,.56,.52,.58,.57,.60,.56,.61,.56,.58,.60,.61,.59,.62,.63,.61,.63,.64,.62,.63,.64,.65,.64,.65,.63,.64,.645,.64,.644]},
- critic:{min:.35,max:.68,pro:[.52,.50,.53,.54,.55,.53,.56,.54,.55,.57,.58,.55,.57,.59,.58,.60,.57,.58,.61,.60,.58,.60,.59,.61,.59,.60,.61,.60,.62,.588],flash:[.42,.45,.47,.46,.49,.48,.50,.52,.51,.53,.52,.54,.55,.53,.56,.55,.57,.58,.56,.57,.58,.59,.58,.60,.59,.60,.61,.62,.63,.644]},
- entropy:{min:.33,max:.47,pro:[.43,.42,.43,.41,.42,.40,.42,.41,.42,.40,.41,.39,.40,.41,.40,.42,.40,.41,.40,.39,.40,.39,.41,.39,.40,.41,.40,.40,.40,.398],flash:[.42,.43,.41,.42,.43,.42,.44,.42,.43,.44,.43,.45,.44,.43,.45,.44,.44,.46,.45,.44,.46,.45,.44,.45,.44,.43,.44,.43,.44,.432]},
- env:{min:0,max:45000,pro:[38000,25000,24000,24100,23500,23900,23700,23500,23800,23600,23700,23800,23600,23900,23700,23700,23600,23800,23700,23600,23700,23900,23600,23700,23700,23800,23600,23700,23600,23671],flash:[41000,39500,38800,38000,37500,37800,37600,37500,37600,37700,38000,37800,37600,37800,37900,37700,37800,37900,37800,37700,37900,37700,37800,37900,37800,37600,37900,37700,37800,37786]},
- staleness:{min:0,max:2.2,pro:[.1,.15,.05,.2,.1,.4,.9,1.2,1.6,1.7,1.8,1.8,1.8,1.8,1.82,.3,.4,.6,.7,.8,1.0,1.2,1.6,1.6,1.7,1.7,1.7,1.7,1.7,1.61],flash:[.1,.2,.1,.3,0,.6,.4,1.0,1.3,1.6,1.7,1.8,1.8,1.8,1.8,1.9,1.8,1.8,1.9,1.9,1.8,1.9,1.9,1.9,1.9,1.8,1.9,1.9,1.9,1.87]},
- measurable:{min:0,max:4500,pro:[4000,2200,3500,2600,3200,2700,3000,2800,3300,3100,2500,3200,2900,2700,3000,2800,3200,3400,2900,3100,2700,3000,2500,2900,2700,3000,2600,2900,2500,2484],flash:[3200,1900,3000,2400,2800,2500,3100,2300,2900,2800,2400,2800,2500,2700,2200,2600,2900,2800,3000,2700,2600,2800,2500,2700,2400,2600,2500,2600,2500,2443]}
-};
-const metricNames = [
-['actor',257,['actor/entropy_loss','actor/pg_loss','actor/approx_kl','actor/clipfrac']],
-['critic',324,['critic/rewards/mean','critic/values/mean','critic/rewards/max','critic/loss']],
-['ctx_prompt_length',81,['ctx_prompt_length/mean','ctx_prompt_length/p95']],
-['ctx_response_length',81,['ctx_response_length/mean','ctx_response_length/p95']],
-['ctx_total_length',108,['ctx_total_length/mean','ctx_total_length/p95']],
-['dynsam',83,['dynsam/avg@n','dynsam/passrate/zero','dynsam/passrate/one','dynsam/num_measurable']],
-['env',15,['env/active','env/created','env/failed']],
-['partial',385,['partial/avg_staleness','partial/rewards/mean','partial/num_partial']],
-['penalty',535,['penalty/total','penalty/kl','penalty/repetition']],
-['perf',1,['perf/gpu_util']],
-['timing_s',3,['timing_s/outer_gen','timing_s/trainer_ops','timing_s/rollout']],
-['train',191,['train/lr','train/grad_norm','train/entropy']],
-['train_infer_diff',11,['train_infer_diff/new_infer/kl','train_infer_diff/weight_norm']],
-['training',2,['training/step','training/tokens']]
-];
-function chartSvg(svg, series, opts={}) {
- if(!svg)return;
- const W=600,H=160,L=38,R=10,T=10,B=23,iw=W-L-R,ih=H-T-B;
- const all=series.flatMap(s=>s.values);
- let min=opts.min ?? Math.min(...all),max=opts.max ?? Math.max(...all);
- if(min===max){min-=1;max+=1}const pad=(max-min)*.04;min-=pad;max+=pad;
- const xs=i=>L+(i/(Math.max(1,Math.max(...series.map(s=>s.values.length))-1)))*iw;
- const ys=v=>T+ih-(v-min)/(max-min)*ih;
- let out='';
- for(let i=0;i<=3;i++){let y=T+ih*i/3;out+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="${colors.grid}" stroke-width="1"/><text x="${L-7}" y="${y+3}" fill="${colors.axis}" font-size="10" text-anchor="end">${(max-(max-min)*i/3).toFixed(opts.decimals ?? 0)}</text>`}
- [0,.33,.66,1].forEach((v,i)=>{const x=L+iw*v;out+=`<text x="${x}" y="${H-6}" fill="${colors.axis}" font-size="10" text-anchor="middle">${opts.time?'09/'+(16+i):[1,10,20,30][i]}</text>`});
- for(const s of series){let vals=s.values;if(opts.smooth>0){vals=vals.map((v,i)=>{let a=Math.max(0,i-opts.smooth),b=Math.min(vals.length-1,i+opts.smooth);return vals.slice(a,b+1).reduce((x,y)=>x+y,0)/(b-a+1)})}
- const d=vals.map((v,i)=>(i?'L':'M')+xs(i).toFixed(1)+' '+ys(v).toFixed(1)).join(' ');
- out+=`<path d="${d}" fill="none" stroke="${s.color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>`;
- const i=vals.length-1;out+=`<circle cx="${xs(i)}" cy="${ys(vals[i])}" r="3" fill="${s.color}"/>`;
- }
- svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio','none');svg.innerHTML=out;
-}
-const charts = $$('[data-chart]');
-function getSeries(key){const d=data[key]||data.dynsam;return [{name:'pro',values:d.pro,color:colors.pro},{name:'flash',values:d.flash,color:colors.flash}]}
-let controls={axis:'step',scale:'linear',smooth:0};
-function repaintCharts(){charts.forEach(el=>{const key=el.dataset.chart;const svg=$('svg',el);chartSvg(svg,getSeries(key),{smooth:controls.smooth,time:controls.axis==='time'});});}
-repaintCharts();
-function setupSegments(id,callback){const root=$('#'+id);if(!root)return;root.addEventListener('click',e=>{const b=e.target.closest('button[data-value]');if(!b)return;$$('button',root).forEach(x=>x.classList.toggle('active',x===b));callback(b.dataset.value,b);});}
-setupSegments('xAxis',v=>{controls.axis=v;repaintCharts()});
-setupSegments('yAxis',v=>{controls.scale=v;repaintCharts()});
-$('#smooth').addEventListener('input',e=>{controls.smooth=Number(e.target.value);$('#smoothLabel').textContent=controls.smooth?String(controls.smooth):'off';repaintCharts()});
-setupSegments('metricsXAxis',()=>{});
-setupSegments('metricsYAxis',()=>{});
-$('#metricsSmooth').addEventListener('input',e=>$('#metricsSmoothLabel').textContent=Number(e.target.value)?e.target.value:'off');
-function tickClocks(){const now=new Date();$$('[data-zone]').forEach(el=>{el.textContent=new Intl.DateTimeFormat('en-GB',{timeZone:el.dataset.zone,hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false}).format(now)});}
-tickClocks();setInterval(tickClocks,1000);
-$$('.tab').forEach(btn=>btn.addEventListener('click',()=>{ $$('.tab').forEach(b=>b.classList.toggle('active',b===btn));$$('.view').forEach(v=>v.classList.toggle('active',v.id===btn.dataset.tab)); }));
-$('#themeToggle').addEventListener('click',()=>{const light=document.body.dataset.mode!=='light';document.body.dataset.mode=light?'light':'dark';document.documentElement.style.setProperty('--bg',light?'#e8e8e8':'#101010');document.documentElement.style.setProperty('--panel',light?'#f5f5f5':'#141414');document.documentElement.style.setProperty('--panel2',light?'#eee':'#171717');document.documentElement.style.setProperty('--edge',light?'#c7c7c7':'#292929');document.documentElement.style.setProperty('--edge2',light?'#d0d0d0':'#222');document.documentElement.style.setProperty('--text',light?'#242424':'#d8d8d8');$$('.panel,.bench,.metric-card,.run-card,.notices').forEach(e=>e.style.background=light?'#f5f5f5':'');});
-const sourceRows=[
-['code/dataset-obg8',53,154,101,53,243],['code/dataset-z6gq',36,154,118,35,87],['code/dataset-sin0',35,95,19,34,95],['code/dataset-m1dt',17,54,37,6,61],['code/dataset-x7wh',43,129,86,42,150],['general/dataset-epqd',20,64,44,0,20],['general/dataset-trla',19,64,45,0,25],['cyber/dataset-9aui',0,64,64,0,0],['code/dataset-t04j',15,63,48,15,81],['code/dataset-dpnn',7,63,56,7,42],['code/dataset-yfch',98,55,0,0,429],['visual/dataset-bvg7',94,52,0,92,7],['code/dataset-v7yx',9,52,43,9,33],['visual/dataset-gtav',55,52,0,50,22],['chat/dataset-8kb6',31,52,21,31,9],['visual/dataset-m2qf',50,52,2,48,14],['code/dataset-7au2',28,52,24,28,8],['general/dataset-q0k8',31,64,33,29,14],['visual/dataset-x2t9',21,52,31,20,19],['code/dataset-nw4e',17,52,35,16,16]];
-function renderSources(id){$('#'+id).innerHTML=sourceRows.map(r=>`<tr><td>${r[0]}</td><td><div class="bar-cell">${r[1]} / ${r[2]} <span class="bar"><i style="width:${Math.min(100,r[1]/r[2]*100)}%"></i></span></div></td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td></tr>`).join('');}
-renderSources('proSources');renderSources('flashSources');
-const catData=[{name:'code',count:1032,share:65.8,delta:'.1 pt',c:'#5889e4',n:11},{name:'general',count:177,share:11.3,delta:'.1 pt',c:'#dc773f',n:4},{name:'cyber',count:0,share:0,delta:'0.0 pt',c:'#5ca878',n:1},{name:'visual',count:306,share:19.5,delta:'+0.4 pt',c:'#d6b64a',n:6},{name:'chat',count:53,share:3.4,delta:'0.0 pt',c:'#c25b88',n:3}];
-function renderComposition(){const by=$('#batchBy .active').dataset.value,run=$('#batchRun .active').dataset.value,unit=$('#batchUnit .active').dataset.value;const rows=catData.map((r,i)=>{let n=r.count;if(run==='flash')n=[1013,192,0,306,57][i];let share=unit==='share'?r.share.toFixed(1)+'%':n.toLocaleString('en-US');return `<tr><td><i class="key" style="background:${r.c}"></i>${by==='source'?r.name:r.name==='code'?'code harness':r.name+' harness'}</td><td>${r.n}</td><td>${share}</td><td>${r.share.toFixed(1)}%</td><td>${r.delta}</td></tr>`;}).join('');$('#compositionRows').innerHTML=rows+'<tr><td>total</td><td>25</td><td>1,568</td><td>100%</td><td>—</td></tr>';
-const svg=$('#stackChart'),W=700,H=205,L=33,R=10,T=12,B=27,iw=W-L-R,ih=H-T-B;let o='';for(let i=0;i<=4;i++){let y=T+ih*i/4;o+=`<line x1="${L}" y1="${y}" x2="${W-R}" y2="${y}" stroke="#292929"/><text x="${L-5}" y="${y+3}" text-anchor="end" fill="#666" font-size="10">${unit==='share'?(100-i*25)+'%':Math.round(1568*(1-i/4))}</text>`}
-const colorsCat=catData.map(r=>r.c);for(let step=0;step<30;step++){let x=L+step*(iw/30)+2,w=Math.max(4,iw/30-5);let mixes=run==='pro'?[.658,.113,0,.195,.034]:[.635,.121,0,.205,.039];const variation=[.92,.97,1.02,.96,1.03,1.0,.99,1.05,.94,1.02,.98,1.04,1.01,.96,1.03,.97,1.0,1.05,.98,.94,1.04,1.02,.96,1.01,.98,1.03,.96,1.02,.99,1][step];let y=T+ih;mixes.forEach((m,i)=>{let val=m*variation*(unit==='share'?100:1568);let h=ih*(unit==='share'?val/100:val/1568);y-=h;o+=`<rect x="${x}" y="${y}" width="${w}" height="${h}" fill="${colorsCat[i]}"/>`;});o+=`<text x="${x+w/2}" y="${H-8}" text-anchor="middle" fill="#666" font-size="9">${step+1}</text>`;}
-svg.setAttribute('viewBox',`0 0 ${W} ${H}`);svg.setAttribute('preserveAspectRatio','none');svg.innerHTML=o;}
-setupSegments('batchBy',renderComposition);setupSegments('batchRun',renderComposition);setupSegments('batchUnit',renderComposition);renderComposition();
 
-const tree=$('#tagTree'),search=$('#tagSearch'),chips=$('#metricChips'),results=$('#metricResults'),empty=$('#metricEmpty');let activeGroup='all',selected=new Set();
-function renderTree(){let q=search.value.trim(),regex=null;if(q){try{regex=new RegExp(q,'i')}catch(e){regex=null}}let groups=metricNames.filter(g=>!q||regex&&regex.test(g[0])||g[2].some(n=>regex&&regex.test(n)));tree.innerHTML=groups.map(g=>`<div class="tree-row ${activeGroup===g[0]?'active':''}" data-group="${g[0]}"><span>· ${g[0]}</span><small>${g[1]}</small></div>`).join('');$('#tagCount').textContent=(q?groups.reduce((n,g)=>n+g[1],0):2077)+' tags';}
-function renderChips(){chips.innerHTML='<button class="metric-chip '+(activeGroup==='all'?'active':'')+'" data-group="all">all&nbsp; 2077 tags</button>'+metricNames.filter(g=>activeGroup==='all'||g[0]===activeGroup).map(g=>`<button class="metric-chip ${selected.has(g[0])?'active':''}" data-group="${g[0]}">${g[0]} / ${g[1]}</button>`).join('');}
-function renderResults(){results.innerHTML='';const chosen=metricNames.filter(g=>selected.has(g[0]));empty.classList.toggle('hidden',chosen.length>0);chosen.forEach((g,i)=>{g[2].slice(0,2).forEach((name,j)=>{const card=document.createElement('article');card.className='metric-card';card.innerHTML=`<div class="metric-head"><span>${name}</span><span class="metric-value"><span class="p">● 0.633</span><br><span class="f">● 0.644</span></span></div><svg class="svg-chart"></svg>`;results.appendChild(card);let key=['dynsam','critic','entropy','env','staleness','measurable'][i%6];chartSvg($('svg',card),getSeries(key),{smooth:Number($('#metricsSmooth').value)});});});}
-tree.addEventListener('click',e=>{const row=e.target.closest('[data-group]');if(!row)return;activeGroup=row.dataset.group;selected.add(activeGroup);renderTree();renderChips();renderResults();});
-chips.addEventListener('click',e=>{const b=e.target.closest('[data-group]');if(!b)return;const group=b.dataset.group;if(group==='all'){activeGroup='all';selected.clear()}else{activeGroup=group;if(selected.has(group))selected.delete(group);else selected.add(group)}renderTree();renderChips();renderResults();});
-search.addEventListener('input',renderTree);renderTree();renderChips();renderResults();
-})();
-</script>
+<div class="status-pill hidden" id="status-pill">reconnecting…</div>
+
+<script src="./origin/js/format.2d418fb3.js"></script>
+<script src="./origin/js/charts.c63953e4.js"></script>
+<script src="./origin/js/app.91806181.js"></script>
 </body>
 </html>

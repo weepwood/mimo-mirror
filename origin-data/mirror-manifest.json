@@ -1,0 +1,58 @@
+{
+  "upstream": "https://mimo.xiaomi.com/rl/",
+  "fetched_at_utc": "2026-10-09T10:31:42Z",
+  "html_bytes": 2051,
+  "assets": [
+    {
+      "url": "https://mimo.xiaomi.com/rl/favicon.40624f41.svg",
+      "path": "origin/favicon.40624f41.svg",
+      "bytes": 298
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/style.90858055.css",
+      "path": "origin/style.90858055.css",
+      "bytes": 23305
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/js/theme.638e7988.js",
+      "path": "origin/js/theme.638e7988.js",
+      "bytes": 452
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/js/format.2d418fb3.js",
+      "path": "origin/js/format.2d418fb3.js",
+      "bytes": 6442
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/js/charts.c63953e4.js",
+      "path": "origin/js/charts.c63953e4.js",
+      "bytes": 23140
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/js/app.91806181.js",
+      "path": "origin/js/app.91806181.js",
+      "bytes": 52261
+    },
+    {
+      "url": "https://mimo.xiaomi.com/rl/fonts/InterVariable.693b77d4.woff2",
+      "path": "origin/fonts/InterVariable.693b77d4.woff2",
+      "bytes": 352240
+    }
+  ],
+  "asset_failures": [],
+  "static_data_failures": [],
+  "static_data_dir": "data.04135c89/",
+  "static_data_files": [
+    "data.04135c89/runs.json",
+    "data.04135c89/notices.json",
+    "data.04135c89/benchmarks.json",
+    "data.04135c89/status-pro.json",
+    "data.04135c89/status-flash.json",
+    "data.04135c89/live-pro.json",
+    "data.04135c89/live-flash.json",
+    "data.04135c89/tags-pro.json",
+    "data.04135c89/tags-flash.json",
+    "data.04135c89/series-pro.json",
+    "data.04135c89/series-flash.json"
+  ]
+}
