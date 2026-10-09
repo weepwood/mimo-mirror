@@ -2,6 +2,10 @@
 
 This project mirrors the public website <https://mimo.xiaomi.com/rl/>.
 
+## 复刻标准与操作流程
+
+本仓库采用原站源文件优先的 1:1 镜像流程。后续复刻其他网站时也按同一原则执行：复用真实 HTML、CSS、JS、字体、图片、图表和数据，只做托管平台必需的最小路径适配，不重新设计相似网站。完整清单见 [网站 1:1 复刻与 GitHub 部署操作规范](docs/WEBSITE_1_TO_1_MIRROR_PLAYBOOK.md)。
+
 ## Source-first build
 
 The GitHub Actions workflow downloads the original HTML, CSS, JavaScript, fonts, and the original static JSON data bundle from the page's own `data.04135c89/` directory. The upstream page's own JavaScript and chart implementation are retained rather than replaced by a separately written interface.
