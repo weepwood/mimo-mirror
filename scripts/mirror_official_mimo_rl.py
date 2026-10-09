@@ -151,20 +151,28 @@ def main():
       ("series","?run=pro","series_pro.json"),("series","?run=flash","series_flash.json")
     ]
     api_failures=[]
+    api_bases=["https://mimo.xiaomi.com/","https://mimo.xiaomi.com/rl/"]
     for endpoint,query,filename in endpoints:
-        url=urljoin(ORIGIN,"api/"+endpoint+query)
-        try:
-            content,_=get(url,"application/json,text/plain,*/*")
-            data=json.loads(content.decode("utf-8","replace"))
-            if endpoint=="runs" and not isinstance(data.get("runs"),list): raise ValueError("missing runs array")
-            if endpoint=="notices" and not isinstance(data.get("notices"),list): raise ValueError("missing notices array")
-            if endpoint=="benchmarks" and not isinstance(data.get("benchmarks"),list): raise ValueError("missing benchmarks array")
-            (DATA_DIR/filename).write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
-            print("API",url,"->",filename,len(content))
-        except Exception as e:
+        errors=[]
+        success=False
+        for api_base in api_bases:
+            url=urljoin(api_base,"api/"+endpoint+query)
+            try:
+                content,_=get(url,"application/json,text/plain,*/*")
+                data=json.loads(content.decode("utf-8","replace"))
+                if endpoint=="runs" and not isinstance(data.get("runs"),list): raise ValueError("missing runs array")
+                if endpoint=="notices" and not isinstance(data.get("notices"),list): raise ValueError("missing notices array")
+                if endpoint=="benchmarks" and not isinstance(data.get("benchmarks"),list): raise ValueError("missing benchmarks array")
+                (DATA_DIR/filename).write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
+                print("API",url,"->",filename,len(content))
+                success=True
+                break
+            except Exception as e:
+                errors.append({"url":url,"error":str(e)})
+        if not success:
             optional=(endpoint=="tags")
-            if not optional: api_failures.append({"url":url,"error":str(e)})
-            print("WARN API",url,e,file=sys.stderr)
+            if not optional: api_failures.extend(errors)
+            print("WARN API",endpoint,errors,file=sys.stderr)
     if not (DATA_DIR/"tags.json").exists():
         for source in ("tags_pro.json","tags_flash.json"):
             if (DATA_DIR/source).exists():
