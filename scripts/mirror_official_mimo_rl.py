@@ -143,85 +143,53 @@ def main():
         if not target: return m.group(0)
         return m.group("prefix")+m.group("q")+relpath(Path("index.html"),target)+m.group("q")
     page=ATTR_RE.sub(rewrite_attr,page)
-    shim=Path("origin-fetch-shim.js")
-    shim.write_text(r"""/* Maps the original public read-only API routes to captured JSON snapshots. */
-(() => {
-  const nativeFetch = window.fetch.bind(window);
-  window.fetch = (input, init) => {
-    let u;
-    try { u = new URL(typeof input === "string" ? input : input.url, window.location.href); }
-    catch (_) { return nativeFetch(input, init); }
-    const method = String((init && init.method) || (input && input.method) || "GET").toUpperCase();
-    if (method !== "GET" && method !== "HEAD") return nativeFetch(input, init);
-    const path = u.pathname.replace(/\/+$/, "");
-    const endpoint = (path.match(/\/api\/([a-z0-9_-]+)$/i) || [])[1];
-    const run = u.searchParams.get("run");
-    const key = run === "flash" ? "flash" : "pro";
-    const table = {
-      runs: "runs.json", notices: "notices.json", benchmarks: "benchmarks.json",
-      status: "status_" + key + ".json", live: "live_" + key + ".json",
-      series: "series_" + key + ".json",
-      tags: run ? "tags_" + key + ".json" : "tags.json"
-    };
-    if (!endpoint || !table[endpoint]) return nativeFetch(input, init);
-    return nativeFetch(new URL("./origin-data/" + table[endpoint], window.location.href).href, init);
-  };
-})();""",encoding="utf-8")
-    tag='<script src="./origin-fetch-shim.js"></script>'
-    if "origin-fetch-shim.js" not in page:
-        if re.search(r"</head\s*>",page,re.I): page=re.sub(r"</head\s*>",tag+"\n</head>",page,count=1,flags=re.I)
-        else: page=tag+"\n"+page
     Path("index.html").write_text(page,encoding="utf-8")
 
-    endpoints=[
-      ("runs","","runs.json"),("notices","","notices.json"),("benchmarks","","benchmarks.json"),
-      ("tags","?run=pro","tags_pro.json"),("tags","?run=flash","tags_flash.json"),("tags","","tags.json"),
-      ("status","?run=pro","status_pro.json"),("status","?run=flash","status_flash.json"),
-      ("live","?run=pro","live_pro.json"),("live","?run=flash","live_flash.json"),
-      ("series","?run=pro","series_pro.json"),("series","?run=flash","series_flash.json")
+    # This upstream build is static: the original app.js reads these files from
+    # DATA = "data.04135c89/" and expects these exact filenames.
+    app_sources=[content.decode("utf-8","replace") for _,(target,content,_) in assets.items() if target.name.startswith("app.") and target.suffix.lower()==".js"]
+    app_source="\\n".join(app_sources)
+    data_match=re.search(r'const DATA\\s*=\\s*["\\']([^"\\']+)["\\']',app_source)
+    if not data_match:
+        raise RuntimeError("The official app bundle no longer declares its static DATA directory.")
+    data_prefix=data_match.group(1)
+    data_dir=Path(data_prefix.rstrip("/"))
+    data_dir.mkdir(parents=True,exist_ok=True)
+    data_files=[
+        "runs.json","notices.json","benchmarks.json",
+        "status-pro.json","status-flash.json",
+        "live-pro.json","live-flash.json",
+        "tags-pro.json","tags-flash.json",
+        "series-pro.json","series-flash.json",
     ]
-    api_failures=[]
-    api_bases=["https://mimo.xiaomi.com/","https://mimo.xiaomi.com/rl/"]
-    for endpoint,query,filename in endpoints:
-        errors=[]
-        success=False
-        for api_base in api_bases:
-            url=urljoin(api_base,"api/"+endpoint+query)
-            try:
-                content,_=get(url,"application/json,text/plain,*/*")
-                data=json.loads(content.decode("utf-8","replace"))
-                if endpoint=="runs" and not isinstance(data.get("runs"),list): raise ValueError("missing runs array")
-                if endpoint=="notices" and not isinstance(data.get("notices"),list): raise ValueError("missing notices array")
-                if endpoint=="benchmarks" and not isinstance(data.get("benchmarks"),list): raise ValueError("missing benchmarks array")
-                (DATA_DIR/filename).write_text(json.dumps(data,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
-                print("API",url,"->",filename,len(content))
-                success=True
-                break
-            except Exception as e:
-                errors.append({"url":url,"error":str(e)})
-        if not success:
-            optional=(endpoint=="tags")
-            if not optional: api_failures.extend(errors)
-            print("WARN API",endpoint,errors,file=sys.stderr)
-    if not (DATA_DIR/"tags.json").exists():
-        for source in ("tags_pro.json","tags_flash.json"):
-            if (DATA_DIR/source).exists():
-                (DATA_DIR/"tags.json").write_bytes((DATA_DIR/source).read_bytes())
-                break
-    if (DATA_DIR/"tags.json").exists():
-        for alias in ("tags_pro.json","tags_flash.json"):
-            if not (DATA_DIR/alias).exists():
-                (DATA_DIR/alias).write_bytes((DATA_DIR/"tags.json").read_bytes())
+    data_failures=[]
+    for filename in data_files:
+        url=urljoin(page_url,data_prefix+filename)
+        try:
+            content,_=get(url,"application/json,text/plain,*/*")
+            payload=json.loads(content.decode("utf-8","replace"))
+            if not isinstance(payload,(dict,list)):
+                raise ValueError("unexpected JSON document shape")
+            (data_dir/filename).write_text(json.dumps(payload,ensure_ascii=False,separators=(",",":")),encoding="utf-8")
+            print("STATIC DATA",url,"->",(data_dir/filename).as_posix(),len(content))
+        except Exception as e:
+            data_failures.append({"url":url,"error":str(e)})
+            print("WARN static data",url,e,file=sys.stderr)
     manifest={"upstream":ORIGIN,"fetched_at_utc":time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime()),
       "html_bytes":len(raw),"assets":[{"url":k,"path":v[0].as_posix(),"bytes":len(v[1])} for k,v in assets.items()],
       "asset_failures":failures,"api_failures":api_failures}
     (DATA_DIR/"mirror-manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
-    required=["runs.json","notices.json","benchmarks.json","status_pro.json","status_flash.json","series_pro.json","series_flash.json"]
-    missing=[n for n in required if not (DATA_DIR/n).is_file()]
-    if missing: raise RuntimeError("Missing required upstream snapshots: "+", ".join(missing))
-    essentials=[x for x in failures if re.search(r"\.(css|js|mjs)(?:$|\?)",x["url"],re.I)]
-    if essentials: raise RuntimeError("Original CSS/JS fetch failed: "+json.dumps(essentials))
-    if api_failures: raise RuntimeError("One or more upstream API routes failed: "+json.dumps(api_failures))
+    required=[data_dir/name for name in data_files]
+    missing=[name.as_posix() for name in required if not name.is_file() or name.stat().st_size==0]
+    if missing:
+        raise RuntimeError("Missing required original static JSON files: "+", ".join(missing))
+    essentials=[x for x in failures if re.search(r"\\.(css|js|mjs)(?:$|\\?)",x["url"],re.I)]
+    if essentials:
+        raise RuntimeError("Original CSS/JS fetch failed: "+json.dumps(essentials))
+    manifest["static_data_dir"]=data_prefix
+    manifest["static_data_files"]=[p.as_posix() for p in required]
+    manifest["static_data_failures"]=data_failures
+    (DATA_DIR/"mirror-manifest.json").write_text(json.dumps(manifest,ensure_ascii=False,indent=2),encoding="utf-8")
     print("Official page mirrored successfully.")
 
 if __name__=="__main__": main()
